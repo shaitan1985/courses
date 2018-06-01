@@ -1,6 +1,6 @@
 from skimage.io import imread, imsave, imshow, show
 
-img = imread("tiger-color.png")
+img = imread("img.png")
 nose = img[370:410, 350:440]
 # imshow(nose)
 # show()
