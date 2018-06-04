@@ -1,37 +1,85 @@
 from skimage.io import imread, imsave, imshow, show
-from skimage import img_as_float, img_as_ubyte
+from skimage import img_as_float, img_as_ubyte, color
 import numpy
 
-img = imread("img.png")
+def show_pic(img):
+    imshow(img)
+    show()
 
-img_f = img_as_float(img)
-r = img_f[:, :, 0]
-g = img_f[:, :, 1]
-b = img_f[:, :, 2]
+def cut_img(img, size=5):
+    shape = img.shape
+    snippet_x = int(shape[0] * size / 100)
+    snippet_y = int(shape[1] * size / 100)
+    return img[snippet_x:shape[0]-snippet_x, snippet_y:shape[0]-snippet_y], (snippet_x, snippet_y)
 
-img_combined = numpy.dstack((b, r, g))
-imsave("out_img.png", img_as_ubyte(r*0.2126 + g*0.7152 + b*0.0722 ))
+def combine_pict(img, chan):
+    chan = numpy.roll(chan, 15, axis=0)
+    chan = numpy.roll(chan, 15, axis=0)
+
+def align(img, g_coord):
+    channels = {'r': "",
+                'g': "",
+                'b': ""}
+    shifts = {'r': "",
+                'g': "",
+                'b': ""}
+
+    row_b, col_b, row_r, col_r = 1, 1, 1, 1
+    row_g, col_g = g_coord
+
+    shape_full = img.shape
+    residue = shape_full[0] % 3
+    start = 0
+    end = int(((shape_full[0] - residue) / 3 + residue))
+
+    for chan in 'rgb':
+        channels[chan], snippents = cut_img(img_as_float(img[start:end, :shape_full[1]]), 10)
+        shifts[chan] = (start, snippents[0], snippents[1])
+
+        #show_pic(channels[chan])
+        start, end = end, int((shape_full[0] - residue) / 3 + end)
+
+
+
+
+
+
+
+
+
+
+    # считаем сдвиги каналов
+
+
+    # сдвигаем точку на зеленом канале
+    # на другие каналы
+    return (row_b, col_b), (row_r, col_r)
+
+
+img = imread("00.png")
+
+print(align(img, (508, 237)))
+
+
+
+# color.rgb2gray(img # перевод в чб с нужной яркостью.
+
+
+# img = imread("img.png")
+#
+# img_f = img_as_float(img)
+# r = img_f[:, :, 0]
+# g = img_f[:, :, 1]
+# b = img_f[:, :, 2]
+#
+# img_combined = numpy.dstack((b, r, g))
+# imsave("out_img.png", img_as_ubyte(r*0.2126 + g*0.7152 + b*0.0722 ))
 # avg_grey = (r + g + b) / 3
 
 
 
 # imshow(avg_grey)
 # show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # img = imread("img.png")
