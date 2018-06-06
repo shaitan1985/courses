@@ -26,6 +26,7 @@ def combine_pict(img, chan):
             if colleration > max_col:
                 max_col = colleration
                 pict = numpy.copy(chan)
+
     return pict
 
 
