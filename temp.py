@@ -13,8 +13,36 @@ def cut_img(img, size=5):
     return img[snippet_x:shape[0]-snippet_x, snippet_y:shape[0]-snippet_y], (snippet_x, snippet_y)
 
 def combine_pict(img, chan):
-    chan = numpy.roll(chan, 15, axis=0)
-    chan = numpy.roll(chan, 15, axis=0)
+    pict = numpy.copy(chan)
+    max_col = 0
+    step = 15
+    shape = chan.shape
+    for x in range(0, shape[0] * 6, step):
+        chan = numpy.roll(chan, step, axis=0)
+        for y in range(0, shape[1] * 6, step):
+            #print(x, y)
+            chan = numpy.roll(chan, step, axis=1)
+            colleration = (img * chan).sum()
+            if colleration > max_col:
+                max_col = colleration
+                pict = numpy.copy(chan)
+    return pict
+
+
+
+
+    #
+    # while counter < 20000:
+    #     counter += 1
+    #     chan = numpy.roll(chan, 1, axis=axis)
+    #     colleration = (img * chan).sum()
+    #     max_col = max_col if max_col >= colleration else colleration
+    #     dct[colleration] = counter
+    # print(max_col, dct[max_col])
+    # copy_chan = numpy.roll(copy_chan, dct[max_col], axis=0)
+    # copy_chan = numpy.roll(copy_chan, dct[max_col], axis=1)
+    # return copy_chan
+
 
 def align(img, g_coord):
     channels = {'r': "",
@@ -30,19 +58,20 @@ def align(img, g_coord):
     shape_full = img.shape
     residue = shape_full[0] % 3
     start = 0
-    end = int(((shape_full[0] - residue) / 3 + residue))
+    end = int(((shape_full[0] - residue) / 3))
 
     for chan in 'rgb':
+        # возвращаем обрезаную картинку и размер обрезков
         channels[chan], snippents = cut_img(img_as_float(img[start:end, :shape_full[1]]), 10)
         shifts[chan] = (start, snippents[0], snippents[1])
 
         #show_pic(channels[chan])
         start, end = end, int((shape_full[0] - residue) / 3 + end)
-
-
-
-
-
+    g = channels.get('g')
+    b = combine_pict(g, channels.get('b'))
+    r = combine_pict(g, channels.get('r'))
+    img_combined = numpy.dstack((b, g, r))
+    show_pic(img_combined)
 
 
 
@@ -55,10 +84,11 @@ def align(img, g_coord):
     # на другие каналы
     return (row_b, col_b), (row_r, col_r)
 
+for i in range(1):
+    img = imread("0{}.png".format(i))
+    align(img, (508, 237))
 
-img = imread("00.png")
-
-print(align(img, (508, 237)))
+#print(align(img, (508, 237)))
 
 
 
